@@ -1,0 +1,147 @@
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+public class BloodSugar {
+    private Scanner scanner;
+
+    // Define a class to represent a blood sugar record
+    public static class Record {
+        private int id;
+        private LocalDate birthday;
+        private int value;
+        private String comment;
+
+        public Record(int id, LocalDate birthday, int value, String comment) {
+            this.id = id;
+            this.birthday = birthday;
+            this.value = value;
+            this.comment = comment;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public LocalDate getBirthday() {
+            return birthday;
+        }
+
+        public int getValue() {
+            return value;
+        }
+
+        public String getComment() {
+            return comment;
+        }
+
+        public void setComment(String comment) {
+            this.comment = comment;
+        }
+
+        public int getAge() {
+            return Period.between(birthday, LocalDate.now()).getYears();
+        }
+
+        @Override
+        public String toString() {
+            return String.format("Record %d: %s (%d years old) - %d (%s)", id, birthday, getAge(), value, comment);
+        }
+    }
+
+    // Define a list to store the blood sugar records
+    private List<Record> records;
+
+    public BloodSugar(Scanner scanner) {
+        this.scanner = scanner;
+        this.records = new ArrayList<>();
+    }
+
+    public void create() {
+        System.out.print("Enter user ID: ");
+        int id = scanner.nextInt();
+        System.out.print("Enter date (yyyy-MM-dd): ");
+        LocalDate birthday = LocalDate.parse(scanner.next());
+        System.out.print("Enter blood sugar value: ");
+        int value = scanner.nextInt();
+        System.out.print("Enter a comment (optional): ");
+        String comment = scanner.nextLine();
+        String ignore = scanner.nextLine();
+        records.add(new Record(id, birthday, value, comment));
+        System.out.println("Record created.");
+    }
+
+    public void index() {
+        System.out.println("ID  Birthday        Age  Value  Comment");
+        System.out.println("--  ----------  ---  -----  -------");
+        for (Record record : records) {
+            System.out.println(record);
+        }
+    }
+
+    public void view(int id) {
+        for (Record record : records) {
+            if (record.getId() == id) {
+                System.out.println(record);
+                return;
+           }
+        }
+        System.out.println("Record not found.");
+    }
+
+    public void delete() {
+        System.out.print("Enter user ID: ");
+        int id = scanner.nextInt();
+        for (int i = 0; i < records.size(); i++) {
+            if (records.get(i).getId() == id) {
+                records.remove(i);
+                System.out.println("Record deleted.");
+                return;
+            }
+        }
+        System.out.println("Record not found.");
+    }
+
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        BloodSugar bloodSugar = new BloodSugar(scanner);
+
+        while (true) {
+            bloodSugar.displayMenu();
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    bloodSugar.create();
+                    break;
+                case 2:
+                    bloodSugar.index();
+                    break;
+                case 3:
+                    System.out.print("Enter user ID: ");
+                    int id = scanner.nextInt();
+                    bloodSugar.view(id);
+                    break;
+                case 4:
+                    bloodSugar.delete();
+                    break;
+                case 5:
+                    System.exit(0);
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+
+    public void displayMenu() {
+        System.out.println("1. Create a record.");
+        System.out.println("2. Show blood sugar data for all users.");
+        System.out.println("3. Show blood sugar data for a selected user.");
+        System.out.println("4. Delete all records.");
+        System.out.println("5. Exit.");
+        System.out.print("Enter your choice: ");
+    }
+}
